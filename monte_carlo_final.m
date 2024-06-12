@@ -5,11 +5,13 @@ L=33;
 iter=500; %traje dosta vremena
 M=10000;
 signal=randn(M,1);
-signal=signal+sqrt(0.1481)*randn(M,1);
+noise=sqrt(0.1481)*randn(M,1);
+signal=signal+noise;
+signal=signal+sqrt(1e-3)*randn(M,1); %sum u mjerenju
 h1=randi([1, 100], 1, 65)';
 d=conv(signal,h1);
 d=d(1:M);
-d=d+sqrt(1e-3)*randn(M,1);
+d=d+sqrt(1e-3)*randn(M,1); %sum u mjerenju
 
 w=zeros(N,1); 
 X=zeros(N,L);
@@ -99,7 +101,7 @@ for ensemble = 1:iter
     lambda = 0.9984;
 
     e2 = zeros(M,1);
-    C=3.2*eye(N);
+    C=1000*eye(N);
 
     for n = 1:M
         if n>=N
@@ -145,14 +147,15 @@ MSD_nlms = w_mk_nlms/iter;
 
 
 figure(1);
-semilogy(MSD_enlms.^2)
+plot(10*log10(MSD_enlms))
 hold on
-semilogy(MSD_lms.^2)
+plot(10*log10(MSD_lms))
 hold on
-semilogy(MSD_rls.^2)
+plot(10*log10(MSD_rls))
 hold on
-semilogy(MSD_nlms.^2)
+plot(10*log10(MSD_nlms))
 title('Mean-Square Deviation (MSD) in dB');
 xlabel('Iteration');
 ylabel('MSD (dB)');
 legend('ENLMS', 'LMS', 'RLS', 'NLMS')
+grid
